@@ -1,0 +1,14 @@
+---
+- name: Configure first managed CentOS server
+  hosts: centos
+  gather_facts: true
+
+  tasks:
+    - name: Create Ansible management marker
+      ansible.builtin.copy:
+        content: |
+          This server is managed by Ansible.
+          Control node: ubuntu-devops
+          Project: platform-engineering-lab
+        dest: /home/adam/ansible-managed.txt
+        mode: '0644'
