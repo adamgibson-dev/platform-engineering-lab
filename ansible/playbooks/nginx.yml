@@ -1,0 +1,39 @@
+---
+- name: Configure Nginx web server
+  hosts: managed
+  become: true
+
+  tasks:
+    - name: Install Nginx
+      ansible.builtin.dnf:
+        name: nginx
+        state: present
+
+    - name: Deploy lab homepage
+      ansible.builtin.copy:
+        dest: /usr/share/nginx/html/index.html
+        content: |
+          <html>
+          <head>
+            <title>Platform Engineering Lab</title>
+          </head>
+          <body>
+            <h1>Platform Engineering Lab</h1>
+            <p>This CentOS web server was configured automatically with Ansible.</p>
+          </body>
+          </html>
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Ensure Nginx is running and enabled
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: true
+    - name: Allow HTTP from DevOps-Lab network
+      ansible.posix.firewalld:
+        rich_rule: 'rule family="ipv4" source address="10.10.10.0/24" service name="http" accept'
+        permanent: true
+        immediate: true
+        state: enabled
